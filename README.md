@@ -7,7 +7,7 @@ Checkout the branch and create a pull request for each homework.
 
 Do NOT merge the pull request. Leave it open.
 
-```
+
 Git 的基本操作：（从git下载项目）`
 
 1. 新建文件夹 命令是mkdir <projectName>
@@ -28,4 +28,3 @@ Git 的基本操作：（从git下载项目）`
    1. 打开git，有个 compare & pull request，点击进去
    2. Compare branch选 hw branch， base branch选 notes branch
    3. 点击create pull request
-```
