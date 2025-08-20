@@ -150,3 +150,8 @@ Git Questions
     git push origin branch → Push to remote
 
     git pull origin branch → Pull from remote
+
+############################
+Hw1: 
+https://github.com/baixi-cs/Project2502
+https://github.com/baixi-cs/Project2501
