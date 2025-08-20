@@ -17,6 +17,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <!-- 关键：依赖接口模块（版本用父的 ${project.version}） -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>demo-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- 测试：不写 version，父里已管理 -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
