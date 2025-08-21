@@ -12,4 +12,5 @@ public class GreetingServiceImplTest {
         // 调用方法，如果没报错说明实现类成功实现了接口
         assertDoesNotThrow(() -> service.greet("Test Message"));
     }
+
 }
