@@ -1,0 +1,205 @@
+
+// 268. Missing Number
+class Solution268 {
+    public int missingNumber(int[] nums) {
+        int n = nums.length, x = n;
+        for (int i = 0; i < n; i++) x ^= i ^ nums[i];
+        return x;
+    }
+}
+
+// 15. 3Sum
+class Solution15 {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && nums[i] == nums[i-1]) continue;
+            int L = i + 1, R = n - 1;
+            while (L < R) {
+                int sum = nums[i] + nums[L] + nums[R];
+                if (sum == 0) {
+                    res.add(Arrays.asList(nums[i], nums[L], nums[R]));
+                    L++; R--;
+                    while (L < R && nums[L] == nums[L-1]) L++;
+                    while (L < R && nums[R] == nums[R+1]) R--;
+                } else if (sum < 0) L++;
+                else R--;
+            }
+        }
+        return res;
+    }
+}
+
+// 143. Reorder List
+class Solution143 {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) return;
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        ListNode prev = null, cur = slow.next;
+        slow.next = null;
+        while (cur != null) {
+            ListNode nxt = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = nxt;
+        }
+        ListNode p1 = head, p2 = prev;
+        while (p2 != null) {
+            ListNode n1 = p1.next, n2 = p2.next;
+            p1.next = p2;
+            p2.next = n1;
+            p1 = n1;
+            p2 = n2;
+        }
+    }
+}
+
+// 269. Alien Dictionary
+class Solution269 {
+    public String alienOrder(String[] words) {
+        Map<Character, Set<Character>> adj = new HashMap<>();
+        int[] indeg = new int[26];
+        Arrays.fill(indeg, -1);
+        for (String w : words) {
+            for (char c : w.toCharArray()) {
+                if (indeg[c - 'a'] == -1) indeg[c - 'a'] = 0;
+                adj.putIfAbsent(c, new HashSet<>());
+            }
+        }
+        for (int i = 0; i < words.length - 1; i++) {
+            String a = words[i], b = words[i + 1];
+            int min = Math.min(a.length(), b.length());
+            int j = 0;
+            while (j < min && a.charAt(j) == b.charAt(j)) j++;
+            if (j == min) {
+                if (a.length() > b.length()) return "";
+            } else {
+                char u = a.charAt(j), v = b.charAt(j);
+                if (adj.get(u).add(v)) indeg[v - 'a']++;
+            }
+        }
+        Deque<Character> dq = new ArrayDeque<>();
+        for (int i = 0; i < 26; i++)
+            if (indeg[i] == 0) dq.offer((char)('a' + i));
+        StringBuilder sb = new StringBuilder();
+        while (!dq.isEmpty()) {
+            char u = dq.poll();
+            sb.append(u);
+            for (char v : adj.getOrDefault(u, Collections.emptySet())) {
+                if (--indeg[v - 'a'] == 0) dq.offer(v);
+            }
+        }
+        for (int i = 0; i < 26; i++)
+            if (indeg[i] > 0) return "";
+        return sb.toString();
+    }
+}
+
+// 271. Encode and Decode Strings
+class Codec271 {
+    public String encode(List<String> strs) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : strs) {
+            sb.append(s.length()).append('#').append(s);
+        }
+        return sb.toString();
+    }
+    public List<String> decode(String s) {
+        List<String> res = new ArrayList<>();
+        int i = 0;
+        while (i < s.length()) {
+            int j = i;
+            while (s.charAt(j) != '#') j++;
+            int len = Integer.parseInt(s.substring(i, j));
+            j++;
+            res.add(s.substring(j, j + len));
+            i = j + len;
+        }
+        return res;
+    }
+}
+
+// 19. Remove Nth Node From End
+class Solution19 {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0, head), fast = dummy, slow = dummy;
+        for (int i = 0; i < n + 1; i++) fast = fast.next;
+        while (fast != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        slow.next = slow.next.next;
+        return dummy.next;
+    }
+}
+
+// 20. Valid Parentheses
+class Solution20 {
+    public boolean isValid(String s) {
+        Deque<Character> st = new ArrayDeque<>();
+        for (char c : s.toCharArray()) {
+            if (c == '(' || c == '{' || c == '[') st.push(c);
+            else {
+                if (st.isEmpty()) return false;
+                char o = st.pop();
+                if ((o == '(' && c != ')') ||
+                    (o == '{' && c != '}') ||
+                    (o == '[' && c != ']')) return false;
+            }
+        }
+        return st.isEmpty();
+    }
+}
+
+// 21. Merge Two Sorted Lists
+class Solution21 {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(), cur = dummy;
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) { cur.next = l1; l1 = l1.next; }
+            else { cur.next = l2; l2 = l2.next; }
+            cur = cur.next;
+        }
+        cur.next = (l1 != null) ? l1 : l2;
+        return dummy.next;
+    }
+}
+
+// 23. Merge k Sorted Lists
+class Solution23 {
+    public ListNode mergeKLists(ListNode[] lists) {
+        PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.val));
+        for (ListNode node : lists) if (node != null) pq.offer(node);
+        ListNode dummy = new ListNode(), tail = dummy;
+        while (!pq.isEmpty()) {
+            ListNode cur = pq.poll();
+            tail.next = cur;
+            tail = tail.next;
+            if (cur.next != null) pq.offer(cur.next);
+        }
+        return dummy.next;
+    }
+}
+
+// 152. Maximum Product Subarray
+class Solution152 {
+    public int maxProduct(int[] nums) {
+        int curMax = nums[0], curMin = nums[0], ans = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int x = nums[i];
+            if (x < 0) { int t = curMax; curMax = curMin; curMin = t; }
+            curMax = Math.max(x, curMax * x);
+            curMin = Math.min(x, curMin * x);
+            ans = Math.max(ans, curMax);
+        }
+        return ans;
+    }
+}
+
+
