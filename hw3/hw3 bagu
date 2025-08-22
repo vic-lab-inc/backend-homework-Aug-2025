@@ -1,0 +1,74 @@
+1. Difference between ArrayList and LinkedList
+•	ArrayList
+o	Backed by dynamic array.
+o	Fast random access (O(1) for get(index)).
+o	Insertion/deletion in the middle is O(n) (needs shifting).
+o	Better when you need frequent access and fewer insertions/removals.
+•	LinkedList
+o	Backed by doubly linked list.
+o	No random access (O(n) for get(index)).
+o	Insertion/deletion at head, tail, or middle is O(1) (if reference is known).
+o	Better when you need frequent insertions/deletions.
+________________________________________
+2. Difference between Vector and ArrayList
+•	Vector
+o	Synchronized → thread-safe but slower.
+o	Legacy class (introduced in Java 1.0).
+•	ArrayList
+o	Not synchronized → faster.
+o	Introduced in Java 1.2, part of Collections framework.
+•	Rule of Thumb: Prefer ArrayList for modern code, unless synchronization is specifically required.
+________________________________________
+3. Time complexity of HashMap
+•	Average Case:
+o	get() → O(1)
+o	put() → O(1)
+o	remove() → O(1)
+•	Worst Case (all keys hash to same bucket):
+o	O(n) (before Java 8: linked list traversal; after Java 8: balanced tree lookup O(log n)).
+________________________________________
+4. Java HashMap implementation
+•	Uses array of buckets.
+•	Each bucket contains:
+o	A linked list (pre-Java 8).
+o	Or a balanced tree (Java 8+ when collisions exceed threshold, typically 8 elements).
+•	Hashing process:
+1.	Compute hashCode() of key.
+2.	Apply a hashing function to map it to bucket index.
+3.	Store entry in that bucket (as a Node object with key, value, hash, next).
+________________________________________
+5. What happens if hash collision occurs?
+•	If two keys have same hash bucket:
+o	Before Java 8: entries stored in a linked list → traversal needed.
+o	After Java 8: if linked list size > 8, it’s converted to a Red-Black Tree → O(log n) lookup.
+•	Still guarantees correct behavior because equals() is checked after hashCode().
+________________________________________
+6. What are hashCode() and equals()?
+•	hashCode()
+o	Returns an int hash value.
+o	Used by HashMap, HashSet, etc., to find the bucket location.
+•	equals(Object obj)
+o	Used to check if two objects are logically equal.
+•	Contract:
+o	If a.equals(b) → then a.hashCode() == b.hashCode().
+o	If a.hashCode() == b.hashCode() → a.equals(b) may or may not be true.
+________________________________________
+7. Why need to implement hashCode() when implementing equals()?
+•	If you override equals() but not hashCode(), two logically equal objects may end up in different buckets.
+•	That breaks HashMap/HashSet contract → objects cannot be found properly.
+________________________________________
+8. HashMap vs TreeMap vs Hashtable
+Feature	HashMap	TreeMap	Hashtable
+Ordering	Unordered	Sorted by keys (natural order / Comparator)	Unordered
+Null keys/values	1 null key, many null values	No null keys, many null values	No null keys, no null values
+Thread-safety	Not synchronized	Not synchronized	Synchronized
+Performance	O(1) average	O(log n)	O(1) average but slower due to sync
+________________________________________
+9. How does ConcurrentHashMap work?
+•	Thread-safe alternative to HashMap.
+•	Uses segmentation & fine-grained locking:
+o	Java 7: Divides map into segments; only one segment locked at a time.
+o	Java 8+: Uses CAS (Compare-And-Swap) operations + lock striping.
+•	Allows concurrent reads and concurrent writes to different segments/buckets.
+•	Doesn’t lock entire map → better performance than Hashtable.
+
