@@ -1,0 +1,202 @@
+import java.util.concurrent.*;
+import java.util.function.IntConsumer;
+
+// 1114. Print in Order
+class Foo {
+    private Semaphore s1 = new Semaphore(0);
+    private Semaphore s2 = new Semaphore(0);
+
+    public Foo() {}
+
+    public void first(Runnable printFirst) throws InterruptedException {
+        printFirst.run();
+        s1.release();
+    }
+
+    public void second(Runnable printSecond) throws InterruptedException {
+        s1.acquire();
+        printSecond.run();
+        s2.release();
+    }
+
+    public void third(Runnable printThird) throws InterruptedException {
+        s2.acquire();
+        printThird.run();
+    }
+}
+
+// 1115. Print FooBar Alternately
+class FooBar {
+    private int n;
+    private Semaphore foo = new Semaphore(1);
+    private Semaphore bar = new Semaphore(0);
+
+    public FooBar(int n) {
+        this.n = n;
+    }
+
+    public void foo(Runnable printFoo) throws InterruptedException {
+        for (int i = 0; i < n; i++) {
+            foo.acquire();
+            printFoo.run();
+            bar.release();
+        }
+    }
+
+    public void bar(Runnable printBar) throws InterruptedException {
+        for (int i = 0; i < n; i++) {
+            bar.acquire();
+            printBar.run();
+            foo.release();
+        }
+    }
+}
+
+// 1116. Print Zero Even Odd
+class ZeroEvenOdd {
+    private int n;
+    private Semaphore zero = new Semaphore(1);
+    private Semaphore even = new Semaphore(0);
+    private Semaphore odd = new Semaphore(0);
+
+    public ZeroEvenOdd(int n) {
+        this.n = n;
+    }
+
+    public void zero(IntConsumer printNumber) throws InterruptedException {
+        for (int i = 1; i <= n; i++) {
+            zero.acquire();
+            printNumber.accept(0);
+            if (i % 2 == 0) even.release();
+            else odd.release();
+        }
+    }
+
+    public void even(IntConsumer printNumber) throws InterruptedException {
+        for (int i = 2; i <= n; i += 2) {
+            even.acquire();
+            printNumber.accept(i);
+            zero.release();
+        }
+    }
+
+    public void odd(IntConsumer printNumber) throws InterruptedException {
+        for (int i = 1; i <= n; i += 2) {
+            odd.acquire();
+            printNumber.accept(i);
+            zero.release();
+        }
+    }
+}
+
+// 1117. Building H2O
+class H2O {
+    private Semaphore h = new Semaphore(2);
+    private Semaphore o = new Semaphore(0);
+
+    public H2O() {}
+
+    public void hydrogen(Runnable releaseHydrogen) throws InterruptedException {
+        h.acquire();
+        releaseHydrogen.run();
+        o.release();
+    }
+
+    public void oxygen(Runnable releaseOxygen) throws InterruptedException {
+        o.acquire(2);
+        releaseOxygen.run();
+        h.release(2);
+    }
+}
+
+// 1195. Fizz Buzz Multithreaded
+class FizzBuzz {
+    private int n;
+    private int current = 1;
+    private Lock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
+
+    public FizzBuzz(int n) {
+        this.n = n;
+    }
+
+    public void fizz(Runnable printFizz) throws InterruptedException {
+        while (true) {
+            lock.lock();
+            try {
+                while (current <= n && (current % 3 != 0 || current % 5 == 0)) {
+                    condition.await();
+                }
+                if (current > n) {
+                    condition.signalAll();
+                    return;
+                }
+                printFizz.run();
+                current++;
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void buzz(Runnable printBuzz) throws InterruptedException {
+        while (true) {
+            lock.lock();
+            try {
+                while (current <= n && (current % 5 != 0 || current % 3 == 0)) {
+                    condition.await();
+                }
+                if (current > n) {
+                    condition.signalAll();
+                    return;
+                }
+                printBuzz.run();
+                current++;
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void fizzbuzz(Runnable printFizzBuzz) throws InterruptedException {
+        while (true) {
+            lock.lock();
+            try {
+                while (current <= n && (current % 15 != 0)) {
+                    condition.await();
+                }
+                if (current > n) {
+                    condition.signalAll();
+                    return;
+                }
+                printFizzBuzz.run();
+                current++;
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void number(IntConsumer printNumber) throws InterruptedException {
+        while (true) {
+            lock.lock();
+            try {
+                while (current <= n && (current % 3 == 0 || current % 5 == 0)) {
+                    condition.await();
+                }
+                if (current > n) {
+                    condition.signalAll();
+                    return;
+                }
+                printNumber.accept(current);
+                current++;
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+}
