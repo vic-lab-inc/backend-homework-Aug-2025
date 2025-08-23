@@ -1,0 +1,95 @@
+1. How to create a new thread?
+There are two common ways:
+Extend Thread class
+class MyThread extends Thread {
+    public void run() {
+        System.out.println("Thread running");
+    }
+}
+new MyThread().start();
+Implement Runnable interface (preferred)
+class MyRunnable implements Runnable {
+    public void run() {
+        System.out.println("Thread running");
+    }
+}
+new Thread(new MyRunnable()).start();
+________________________________________
+2. Difference between Runnable and Callable?
+•	Runnable:
+o	run() method, returns void.
+o	Cannot throw checked exceptions.
+•	Callable:
+o	call() method, returns a value (V).
+o	Can throw checked exceptions.
+o	Used with ExecutorService and Future.
+________________________________________
+3. How does thread communicate with each other?
+•	Using wait(), notify(), and notifyAll() methods (Object class).
+•	Example: one thread waits until another notifies it of an update.
+•	Also possible with shared variables (volatile/synchronized) or higher-level concurrency utilities (e.g., BlockingQueue, CountDownLatch, CyclicBarrier).
+________________________________________
+4. What is synchronized?
+•	A modifier in Java that ensures only one thread can access a block/method at a time.
+•	Prevents race conditions by acquiring a lock on the object or class.
+________________________________________
+5. What is volatile?
+•	A keyword that ensures:
+o	Changes to a variable are always visible to all threads.
+o	Prevents caching of variable in thread-local memory.
+•	Does not provide atomicity (only visibility).
+________________________________________
+6. sleep() vs. wait()?
+•	sleep():
+o	Pauses thread for a given time.
+o	Does not release locks.
+o	Belongs to Thread class.
+•	wait():
+o	Pauses thread until notify()/notifyAll() is called.
+o	Releases the lock.
+o	Belongs to Object class.
+________________________________________
+7. Difference between t.start() and t.run()?
+•	t.start() → Creates a new thread and executes run().
+•	t.run() → Executes run() in the current thread (no new thread created).
+________________________________________
+8. Class lock vs. Object lock?
+•	Object lock: Each instance of a class has its own lock.
+•	Class lock: A single lock per class (used with static synchronized).
+________________________________________
+9. What is join() method?
+•	join() makes one thread wait until another thread completes execution.
+•	t1.start();
+•	t1.join(); // main thread waits for t1
+________________________________________
+10. What is yield() method?
+•	Suggests the scheduler to pause current thread and give chance to others of same priority.
+•	Not guaranteed, just a hint.
+________________________________________
+11. What is ThreadPool? How many types of ThreadPool? What is the TaskQueue in ThreadPool?
+•	ThreadPool = Manages a pool of worker threads to execute tasks efficiently.
+•	Provided by ExecutorService.
+•	Types (from Executors):
+o	newFixedThreadPool(n)
+o	newCachedThreadPool()
+o	newSingleThreadExecutor()
+o	newScheduledThreadPool(n)
+•	TaskQueue: Queue that holds tasks waiting for execution (often BlockingQueue).
+________________________________________
+12. Difference between shutdown() and shutdownNow()?
+•	shutdown():
+o	Graceful shutdown, waits for submitted tasks to finish.
+•	shutdownNow():
+o	Attempts to stop all running tasks immediately, returns list of unexecuted tasks.
+________________________________________
+13. What is the concurrent collections? Can you list some concurrent data structures (Thread-safe)?
+•	Concurrent collections: Thread-safe data structures designed for concurrency.
+•	Examples:
+o	ConcurrentHashMap
+o	CopyOnWriteArrayList
+o	CopyOnWriteArraySet
+o	ConcurrentLinkedQueue
+o	LinkedBlockingQueue, ArrayBlockingQueue
+o	PriorityBlockingQueue
+o	ConcurrentSkipListMap, ConcurrentSkipListSet
+
