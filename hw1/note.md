@@ -1,4 +1,3 @@
-# Maven and Git Notes
 
 ## Maven
 
